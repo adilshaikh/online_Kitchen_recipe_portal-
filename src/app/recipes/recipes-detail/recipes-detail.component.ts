@@ -1,6 +1,7 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Recipe } from '../recipe.model';
 import { RecipesServices } from '../recipes.service';
+import { ActivatedRoute, Params, Router } from '@angular/router';
 
 @Component({
   selector: 'app-recipes-detail',
@@ -8,13 +9,27 @@ import { RecipesServices } from '../recipes.service';
   styleUrls: ['./recipes-detail.component.css']
 })
 export class RecipesDetailComponent implements OnInit {
-@Input() recipe: Recipe;
-
-  constructor(private recipeService: RecipesServices) { }
+ recipe: Recipe;
+id: number;
+  constructor(private recipeService: RecipesServices,
+    private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
+    //const id = this.route.snapshot.params['id']
+    this.route.params.subscribe(
+      (params: Params) => {
+        this.id = +params['id'];
+        this.recipe = this.recipeService.getRec(this.id);
+      }
+    );
   }
 onAddToShoppingList(){
   this.recipeService.addIngredientToShoppingList(this.recipe.ingredients);
 }
+
+onEditRecipe() {
+  this.router.navigate(['edit'], {relativeTo: this.route})
+}
+
+
 }
